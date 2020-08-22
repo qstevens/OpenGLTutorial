@@ -150,6 +150,7 @@
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="vboindexer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Fragment.glsl" />
@@ -160,6 +161,7 @@
     <ClInclude Include="object.hpp" />
     <ClInclude Include="shader.hpp" />
     <ClInclude Include="texture.hpp" />
+    <ClInclude Include="vboindexer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="uvmap.DDS" />

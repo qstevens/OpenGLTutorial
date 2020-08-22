@@ -11,84 +11,7 @@
 #include "texture.hpp"
 #include "controls.hpp"
 #include "object.hpp"
-//
-//static const GLfloat g_vertex_buffer_data[] = {
-//	-1.0f,-1.0f,-1.0f, // triangle 1 : begin
-//	-1.0f,-1.0f, 1.0f,
-//	-1.0f, 1.0f, 1.0f, // triangle 1 : end
-//	1.0f, 1.0f,-1.0f, // triangle 2 : begin
-//	-1.0f,-1.0f,-1.0f,
-//	-1.0f, 1.0f,-1.0f, // triangle 2 : end
-//	1.0f,-1.0f, 1.0f,
-//	-1.0f,-1.0f,-1.0f,
-//	1.0f,-1.0f,-1.0f,
-//	1.0f, 1.0f,-1.0f,
-//	1.0f,-1.0f,-1.0f,
-//	-1.0f,-1.0f,-1.0f,
-//	-1.0f,-1.0f,-1.0f,
-//	-1.0f, 1.0f, 1.0f,
-//	-1.0f, 1.0f,-1.0f,
-//	1.0f,-1.0f, 1.0f,
-//	-1.0f,-1.0f, 1.0f,
-//	-1.0f,-1.0f,-1.0f,
-//	-1.0f, 1.0f, 1.0f,
-//	-1.0f,-1.0f, 1.0f,
-//	1.0f,-1.0f, 1.0f,
-//	1.0f, 1.0f, 1.0f,
-//	1.0f,-1.0f,-1.0f,
-//	1.0f, 1.0f,-1.0f,
-//	1.0f,-1.0f,-1.0f,
-//	1.0f, 1.0f, 1.0f,
-//	1.0f,-1.0f, 1.0f,
-//	1.0f, 1.0f, 1.0f,
-//	1.0f, 1.0f,-1.0f,
-//	-1.0f, 1.0f,-1.0f,
-//	1.0f, 1.0f, 1.0f,
-//	-1.0f, 1.0f,-1.0f,
-//	-1.0f, 1.0f, 1.0f,
-//	1.0f, 1.0f, 1.0f,
-//	-1.0f, 1.0f, 1.0f,
-//	1.0f,-1.0f, 1.0f
-//};
-//
-//static const GLfloat g_uv_buffer_data[] = {
-//	0.000059f, 1.0f - 0.000004f,
-//	0.000103f, 1.0f - 0.336048f,
-//	0.335973f, 1.0f - 0.335903f,
-//	1.000023f, 1.0f - 0.000013f,
-//	0.667979f, 1.0f - 0.335851f,
-//	0.999958f, 1.0f - 0.336064f,
-//	0.667979f, 1.0f - 0.335851f,
-//	0.336024f, 1.0f - 0.671877f,
-//	0.667969f, 1.0f - 0.671889f,
-//	1.000023f, 1.0f - 0.000013f,
-//	0.668104f, 1.0f - 0.000013f,
-//	0.667979f, 1.0f - 0.335851f,
-//	0.000059f, 1.0f - 0.000004f,
-//	0.335973f, 1.0f - 0.335903f,
-//	0.336098f, 1.0f - 0.000071f,
-//	0.667979f, 1.0f - 0.335851f,
-//	0.335973f, 1.0f - 0.335903f,
-//	0.336024f, 1.0f - 0.671877f,
-//	1.000004f, 1.0f - 0.671847f,
-//	0.999958f, 1.0f - 0.336064f,
-//	0.667979f, 1.0f - 0.335851f,
-//	0.668104f, 1.0f - 0.000013f,
-//	0.335973f, 1.0f - 0.335903f,
-//	0.667979f, 1.0f - 0.335851f,
-//	0.335973f, 1.0f - 0.335903f,
-//	0.668104f, 1.0f - 0.000013f,
-//	0.336098f, 1.0f - 0.000071f,
-//	0.000103f, 1.0f - 0.336048f,
-//	0.000004f, 1.0f - 0.671870f,
-//	0.336024f, 1.0f - 0.671877f,
-//	0.000103f, 1.0f - 0.336048f,
-//	0.336024f, 1.0f - 0.671877f,
-//	0.335973f, 1.0f - 0.335903f,
-//	0.667969f, 1.0f - 0.671889f,
-//	1.000004f, 1.0f - 0.671847f,
-//	0.667979f, 1.0f - 0.335851f
-//};
+#include "vboindexer.hpp"
 
 int main() {
 	glewExperimental = true;
@@ -98,8 +21,8 @@ int main() {
 	}
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -126,7 +49,9 @@ int main() {
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	glEnable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE); 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -152,34 +77,56 @@ int main() {
 	// Add light
 	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
-	// Load .obj file
+	// Load .obj file vertex data
 	std::vector< glm::vec3 > vertices;
 	std::vector< glm::vec2 > uvs;
 	std::vector< glm::vec3 > normals;
 	bool res = loadOBJ("cube.obj", vertices, uvs, normals);
 
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+	// Add vertex attributes to index
+	std::vector<unsigned short> indices;
+	std::vector<glm::vec3> indexed_vertices;
+	std::vector<glm::vec2> indexed_uvs;
+	std::vector<glm::vec3> indexed_normals;
+	indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs, indexed_normals);
 
 	// Create vertex buffer
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
 
 	// Create UV buffer
 	GLuint uvbuffer;
 	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, uvs.size()*sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size()*sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
 
 	// Create normals buffer
 	GLuint normalbuffer;
 	glGenBuffers(1, &normalbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
 
+
+	// Element vertex buffer
+	GLuint elementbuffer;
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
+
+	double lastTime = glfwGetTime();
+	int nbFrames = 0;
 
 	do {
+		double currentTime = glfwGetTime();
+		nbFrames++;
+		if (currentTime - lastTime >= 1.0) {
+			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+			nbFrames = 0;
+			lastTime += 1.0;
+		}
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		computeMatricesFromInputs(window);
@@ -241,8 +188,17 @@ int main() {
 			(void*)0                          // array buffer offset
 		);
 
+		// Configure element index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
 		// Draw
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+		glDrawElements(
+			GL_TRIANGLES, 
+			indices.size(), 
+			GL_UNSIGNED_SHORT, 
+			(void*)0
+		);
+
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
