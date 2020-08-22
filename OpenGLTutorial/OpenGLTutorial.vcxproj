@@ -152,8 +152,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Fragment.shader" />
-    <None Include="Vertex.shader" />
+    <None Include="Fragment.glsl" />
+    <None Include="Vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="controls.hpp" />

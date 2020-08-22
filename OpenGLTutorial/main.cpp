@@ -133,7 +133,7 @@ int main() {
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// Load shaders
-	GLuint programID = LoadShaders("Vertex.shader", "Fragment.shader");
+	GLuint programID = LoadShaders("Vertex.glsl", "Fragment.glsl");
 
 	// Create vertex array
 	GLuint VertexArrayID;
@@ -142,10 +142,15 @@ int main() {
 
 	// Setup camera
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+	GLuint ModelID = glGetUniformLocation(programID, "M");
+	GLuint ViewID = glGetUniformLocation(programID, "V");
 
 	// Create texture
 	GLuint Texture = loadDDS("uvmap.DDS");
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
+
+	// Add light
+	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
 	// Load .obj file
 	std::vector< glm::vec3 > vertices;
@@ -167,6 +172,13 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, uvs.size()*sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
 
+	// Create normals buffer
+	GLuint normalbuffer;
+	glGenBuffers(1, &normalbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
+
+
 	do {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -181,6 +193,12 @@ int main() {
 
 		// Pass transformation
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &Model[0][0]);
+		glUniformMatrix4fv(ViewID, 1, GL_FALSE, &View[0][0]);
+
+		// Pass light position
+		glm::vec3 lightPos = glm::vec3(4, 4, 4);
+		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 		// Pass textures
 		glActiveTexture(GL_TEXTURE0);
@@ -205,6 +223,18 @@ int main() {
 		glVertexAttribPointer(
 			1,                                // attribute 1. Must match layout in shader.
 			2,                                // size : U+V => 2
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// Configure normals buffer
+		glEnableVertexAttribArray(2);
+		glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+		glVertexAttribPointer(
+			2,                                // attribute
+			3,                                // size
 			GL_FLOAT,                         // type
 			GL_FALSE,                         // normalized?
 			0,                                // stride
