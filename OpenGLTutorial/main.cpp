@@ -1,92 +1,94 @@
-﻿#include <stdio.h>
-#include <stdlib.h>
-
-#include <GL/glew.h>
+﻿#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
 #include "shader.hpp"
 #include "texture.hpp"
 #include "controls.hpp"
-
-static const GLfloat g_vertex_buffer_data[] = {
-	-1.0f,-1.0f,-1.0f, // triangle 1 : begin
-	-1.0f,-1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f, // triangle 1 : end
-	1.0f, 1.0f,-1.0f, // triangle 2 : begin
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f, // triangle 2 : end
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f
-};
-
-static const GLfloat g_uv_buffer_data[] = {
-	0.000059f, 1.0f - 0.000004f,
-	0.000103f, 1.0f - 0.336048f,
-	0.335973f, 1.0f - 0.335903f,
-	1.000023f, 1.0f - 0.000013f,
-	0.667979f, 1.0f - 0.335851f,
-	0.999958f, 1.0f - 0.336064f,
-	0.667979f, 1.0f - 0.335851f,
-	0.336024f, 1.0f - 0.671877f,
-	0.667969f, 1.0f - 0.671889f,
-	1.000023f, 1.0f - 0.000013f,
-	0.668104f, 1.0f - 0.000013f,
-	0.667979f, 1.0f - 0.335851f,
-	0.000059f, 1.0f - 0.000004f,
-	0.335973f, 1.0f - 0.335903f,
-	0.336098f, 1.0f - 0.000071f,
-	0.667979f, 1.0f - 0.335851f,
-	0.335973f, 1.0f - 0.335903f,
-	0.336024f, 1.0f - 0.671877f,
-	1.000004f, 1.0f - 0.671847f,
-	0.999958f, 1.0f - 0.336064f,
-	0.667979f, 1.0f - 0.335851f,
-	0.668104f, 1.0f - 0.000013f,
-	0.335973f, 1.0f - 0.335903f,
-	0.667979f, 1.0f - 0.335851f,
-	0.335973f, 1.0f - 0.335903f,
-	0.668104f, 1.0f - 0.000013f,
-	0.336098f, 1.0f - 0.000071f,
-	0.000103f, 1.0f - 0.336048f,
-	0.000004f, 1.0f - 0.671870f,
-	0.336024f, 1.0f - 0.671877f,
-	0.000103f, 1.0f - 0.336048f,
-	0.336024f, 1.0f - 0.671877f,
-	0.335973f, 1.0f - 0.335903f,
-	0.667969f, 1.0f - 0.671889f,
-	1.000004f, 1.0f - 0.671847f,
-	0.667979f, 1.0f - 0.335851f
-};
+#include "object.hpp"
+//
+//static const GLfloat g_vertex_buffer_data[] = {
+//	-1.0f,-1.0f,-1.0f, // triangle 1 : begin
+//	-1.0f,-1.0f, 1.0f,
+//	-1.0f, 1.0f, 1.0f, // triangle 1 : end
+//	1.0f, 1.0f,-1.0f, // triangle 2 : begin
+//	-1.0f,-1.0f,-1.0f,
+//	-1.0f, 1.0f,-1.0f, // triangle 2 : end
+//	1.0f,-1.0f, 1.0f,
+//	-1.0f,-1.0f,-1.0f,
+//	1.0f,-1.0f,-1.0f,
+//	1.0f, 1.0f,-1.0f,
+//	1.0f,-1.0f,-1.0f,
+//	-1.0f,-1.0f,-1.0f,
+//	-1.0f,-1.0f,-1.0f,
+//	-1.0f, 1.0f, 1.0f,
+//	-1.0f, 1.0f,-1.0f,
+//	1.0f,-1.0f, 1.0f,
+//	-1.0f,-1.0f, 1.0f,
+//	-1.0f,-1.0f,-1.0f,
+//	-1.0f, 1.0f, 1.0f,
+//	-1.0f,-1.0f, 1.0f,
+//	1.0f,-1.0f, 1.0f,
+//	1.0f, 1.0f, 1.0f,
+//	1.0f,-1.0f,-1.0f,
+//	1.0f, 1.0f,-1.0f,
+//	1.0f,-1.0f,-1.0f,
+//	1.0f, 1.0f, 1.0f,
+//	1.0f,-1.0f, 1.0f,
+//	1.0f, 1.0f, 1.0f,
+//	1.0f, 1.0f,-1.0f,
+//	-1.0f, 1.0f,-1.0f,
+//	1.0f, 1.0f, 1.0f,
+//	-1.0f, 1.0f,-1.0f,
+//	-1.0f, 1.0f, 1.0f,
+//	1.0f, 1.0f, 1.0f,
+//	-1.0f, 1.0f, 1.0f,
+//	1.0f,-1.0f, 1.0f
+//};
+//
+//static const GLfloat g_uv_buffer_data[] = {
+//	0.000059f, 1.0f - 0.000004f,
+//	0.000103f, 1.0f - 0.336048f,
+//	0.335973f, 1.0f - 0.335903f,
+//	1.000023f, 1.0f - 0.000013f,
+//	0.667979f, 1.0f - 0.335851f,
+//	0.999958f, 1.0f - 0.336064f,
+//	0.667979f, 1.0f - 0.335851f,
+//	0.336024f, 1.0f - 0.671877f,
+//	0.667969f, 1.0f - 0.671889f,
+//	1.000023f, 1.0f - 0.000013f,
+//	0.668104f, 1.0f - 0.000013f,
+//	0.667979f, 1.0f - 0.335851f,
+//	0.000059f, 1.0f - 0.000004f,
+//	0.335973f, 1.0f - 0.335903f,
+//	0.336098f, 1.0f - 0.000071f,
+//	0.667979f, 1.0f - 0.335851f,
+//	0.335973f, 1.0f - 0.335903f,
+//	0.336024f, 1.0f - 0.671877f,
+//	1.000004f, 1.0f - 0.671847f,
+//	0.999958f, 1.0f - 0.336064f,
+//	0.667979f, 1.0f - 0.335851f,
+//	0.668104f, 1.0f - 0.000013f,
+//	0.335973f, 1.0f - 0.335903f,
+//	0.667979f, 1.0f - 0.335851f,
+//	0.335973f, 1.0f - 0.335903f,
+//	0.668104f, 1.0f - 0.000013f,
+//	0.336098f, 1.0f - 0.000071f,
+//	0.000103f, 1.0f - 0.336048f,
+//	0.000004f, 1.0f - 0.671870f,
+//	0.336024f, 1.0f - 0.671877f,
+//	0.000103f, 1.0f - 0.336048f,
+//	0.336024f, 1.0f - 0.671877f,
+//	0.335973f, 1.0f - 0.335903f,
+//	0.667969f, 1.0f - 0.671889f,
+//	1.000004f, 1.0f - 0.671847f,
+//	0.667979f, 1.0f - 0.335851f
+//};
 
 int main() {
 	glewExperimental = true;
@@ -142,27 +144,34 @@ int main() {
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
 	// Create texture
-	GLuint Texture = loadDDS("uvtemplate.DDS");
+	GLuint Texture = loadDDS("uvmap.DDS");
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
-	
+
+	// Load .obj file
+	std::vector< glm::vec3 > vertices;
+	std::vector< glm::vec2 > uvs;
+	std::vector< glm::vec3 > normals;
+	bool res = loadOBJ("cube.obj", vertices, uvs, normals);
+
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+
 	// Create vertex buffer
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
 
 	// Create UV buffer
 	GLuint uvbuffer;
 	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, uvs.size()*sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
 
 	do {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		computeMatricesFromInputs(window);
 		glm::mat4 Projection = getProjectionMatrix();
-
 		glm::mat4 View = getViewMatrix();
 		glm::mat4 Model = glm::mat4(1.0f);
 		glm::mat4 mvp = Projection * View * Model;
@@ -203,7 +212,7 @@ int main() {
 		);
 
 		// Draw
-		glDrawArrays(GL_TRIANGLES, 0, 12*3);
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
