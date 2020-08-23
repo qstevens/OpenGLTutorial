@@ -6,7 +6,7 @@ in vec3 LightDirection_cameraspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 Position_worldspace;
 
-out vec4 color;
+layout(location = 0) out vec3 color;
 
 uniform sampler2D myTextureSampler;
 uniform mat4 MV;
@@ -35,5 +35,4 @@ void main() {
 	color.rgb = MaterialAmbientColor + 
 		MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance) + 
 		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha, 5)/(distance*distance);
-	color.a = 1;
 }

@@ -44,6 +44,12 @@
     <None Include="Vertex.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="PassthroughVertex.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="WobblyTextureFragment.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="texture.hpp">

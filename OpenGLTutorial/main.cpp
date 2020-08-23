@@ -49,9 +49,7 @@ int main() {
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	glDisable(GL_CULL_FACE); 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_CULL_FACE); 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -108,12 +106,57 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
 	glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
 
-
-	// Element vertex buffer
+	// Create element vertex buffer
 	GLuint elementbuffer;
 	glGenBuffers(1, &elementbuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
+
+	//// Create extra frame buffer
+	//GLuint framebuffer = 0;
+	//glGenFramebuffers(1, &framebuffer);
+	//glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+	//// Create rendered texture
+	//GLuint renderedTexture;
+	//glGenTextures(1, &renderedTexture);
+	//glBindTexture(GL_TEXTURE_2D, renderedTexture);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	//// Create depth render buffer
+	//GLuint depthrenderbuffer;
+	//glGenRenderbuffers(1, &depthrenderbuffer);
+	//glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
+	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 768);
+	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+
+	//glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
+
+	//GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	//glDrawBuffers(1, DrawBuffers); 
+	//
+	//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	//	return false;
+
+	//static const GLfloat g_quad_vertex_buffer_data[] = {
+	//	-1.0f, -1.0f, 0.0f,
+	//	 1.0f, -1.0f, 0.0f,
+	//	-1.0f,  1.0f, 0.0f,
+	//	-1.0f,  1.0f, 0.0f,
+	//	 1.0f, -1.0f, 0.0f,
+	//	 1.0f,  1.0f, 0.0f,
+	//};
+
+	//GLuint quad_vertexbuffer;
+	//glGenBuffers(1, &quad_vertexbuffer);
+	//glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+
+	//GLuint quad_programID = LoadShaders("PassthroughVertex.glsl", "WobblyTextureFragment.glsl");
+	//GLuint texID = glGetUniformLocation(quad_programID, "renderedTexture");
+	//GLuint timeID = glGetUniformLocation(quad_programID, "time");
 
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
@@ -126,6 +169,9 @@ int main() {
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
+		/*
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		glViewport(0, 0, 1024, 768);*/
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -191,6 +237,8 @@ int main() {
 		// Configure element index buffer
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
+		glViewport(0, 0, 1024, 768);
+
 		// Draw
 		glDrawElements(
 			GL_TRIANGLES, 
@@ -199,9 +247,39 @@ int main() {
 			(void*)0
 		);
 
-
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+
+		//// Draw rendered texture
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glViewport(0, 0, 1024, 768);
+
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		//glUseProgram(quad_programID);
+
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, renderedTexture);
+		//glUniform1i(texID, 0);
+
+		//glUniform1f(timeID, (float)(glfwGetTime() * 10.0f));
+
+		//// Configure vertex buffer
+		//glEnableVertexAttribArray(0);
+		//glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+		//glVertexAttribPointer(
+		//	0,                  // attribute 0.
+		//	3,                  // size
+		//	GL_FLOAT,           // type
+		//	GL_FALSE,           // normalized?
+		//	0,                  // stride
+		//	(void*)0            // array buffer offset
+		//);
+
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		//glDisableVertexAttribArray(0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -210,8 +288,15 @@ int main() {
 
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
+	glDeleteBuffers(1, &normalbuffer);
+	glDeleteBuffers(1, &elementbuffer);
 	glDeleteProgram(programID);
 	glDeleteTextures(1, &Texture);
+
+	//glDeleteFramebuffers(1, &framebuffer);
+	//glDeleteTextures(1, &renderedTexture);
+	//glDeleteRenderbuffers(1, &depthrenderbuffer);
+	//glDeleteBuffers(1, &quad_vertexbuffer);
 	glDeleteVertexArrays(1, &VertexArrayID);
 
 	glfwTerminate();

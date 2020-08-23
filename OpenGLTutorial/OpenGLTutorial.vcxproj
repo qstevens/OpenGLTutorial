@@ -154,7 +154,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Fragment.glsl" />
+    <None Include="PassthroughVertex.glsl" />
     <None Include="Vertex.glsl" />
+    <None Include="WobblyTextureFragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="controls.hpp" />
